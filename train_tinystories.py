@@ -33,37 +33,37 @@ import wandb
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
-out_dir = '/home/aharrasse/out_70'
-eval_interval = 2000
+out_dir = '/home/aharrasse/out_tiny_90'
+eval_interval = 100
 log_interval = 10
-eval_iters = 200
+eval_iters = 50
 eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
-init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
+init_from = 'resume' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
 wandb_log = True # disabled by default
-wandb_project = 'multilingual-gpt'
-wandb_run_name = 'gpt2-multilingual-70-nano_new' # 'run' + str(time.time())
+wandb_project = 'multilingual-tinystories'
+wandb_run_name = 'multilingual-tinystories-90' # 'run' + str(time.time())
 # data
 # dataset = 'openwebtext'
-gradient_accumulation_steps = 5 * 8 # used to simulate larger batch sizes
-batch_size = 12 # if gradient_accumulation_steps > 1, this is the micro-batch size
-block_size = 1024
+gradient_accumulation_steps = 16 # used to simulate larger batch sizes
+batch_size = 80 # if gradient_accumulation_steps > 1, this is the micro-batch size
+block_size = 512
 # model
-n_layer = 12
-n_head = 12
+n_layer = 4
+n_head = 16
 n_embd = 768
 dropout = 0.0 # for pretraining 0 is good, for finetuning try 0.1+
 bias = False # do we use bias inside LayerNorm and Linear layers?
 # adamw optimizer
-learning_rate = 6e-4 # max learning rate
-max_iters = 600000 # total number of training iterations
+learning_rate = 5e-4 # max learning rate
+max_iters = 8000 # total number of training iterations
 weight_decay = 1e-1
 beta1 = 0.9
 beta2 = 0.95
 grad_clip = 1.0 # clip gradients at this value, or disable if == 0.0
 # learning rate decay settings
-decay_lr = True # whether to decay the learning rate
+decay_lr = False # whether to decay the learning rate
 warmup_iters = 2000 # how many steps to warm up for
 lr_decay_iters = 600000 # should be ~= max_iters per Chinchilla
 min_lr = 6e-5 # minimum learning rate, should be ~= learning_rate/10 per Chinchilla
@@ -81,11 +81,11 @@ config = {k: globals()[k] for k in config_keys} # will be useful for logging
 
 # validation datasets per language
 val_langs = {
-    'arb_Arab': '/home/aharrasse/val_data_per_lang/arb_Arab_val.bin',
-    'cmn_Hani': '/home/aharrasse/val_data_per_lang/cmn_Hani_val.bin',
-    'deu_Latn': '/home/aharrasse/val_data_per_lang/deu_Latn_val.bin',
-    'eng': '/home/aharrasse/val_data_per_lang/eng_val.bin',
-    'fra_Latn': '/home/aharrasse/val_data_per_lang/fra_Latn_val.bin',
+    'arb': '/home/aharrasse/val_data_per_lang_tinystories/arb_tinystories_val.bin',
+    'cmn': '/home/aharrasse/val_data_per_lang_tinystories/cmn_tinystories_val.bin',
+    'deu': '/home/aharrasse/val_data_per_lang_tinystories/deu_tinystories_val.bin',
+    'eng': '/home/aharrasse/val_data_per_lang_tinystories/eng_tinystories_val.bin',
+    'fra': '/home/aharrasse/val_data_per_lang_tinystories/fra_tinystories_val.bin',
 }
 
 
@@ -125,14 +125,14 @@ ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=
 
 # poor man's data loader
 # data_dir = os.path.join('data', dataset)
-data_dir = '/home/aharrasse/MultilingualGPT/data/openwebtext'
+data_dir = '/home/aharrasse/nanoGPT/data/tinystories'
 def get_batch(split):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == 'train':
-        data = np.memmap(os.path.join(data_dir, 'train_700.bin'), dtype=np.uint32, mode='r')
+        data = np.memmap(os.path.join(data_dir, 'train_tiny_90.bin'), dtype=np.uint32, mode='r')
     else:
-        data = np.memmap(os.path.join(data_dir, 'val_700.bin'), dtype=np.uint32, mode='r')
+        data = np.memmap(os.path.join(data_dir, 'val_tiny_90.bin'), dtype=np.uint32, mode='r')
     ix = torch.randint(len(data) - block_size, (batch_size,))
     x = torch.stack([torch.from_numpy((data[i:i+block_size]).astype(np.int64)) for i in ix])
     y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in ix])
@@ -301,11 +301,11 @@ def get_lr(it):
 
 # logging
 if wandb_log and master_process:
-    wandb.init(project=wandb_project, name=wandb_run_name, config=config)
-    # wandb.init(project=wandb_project,
-    #            name=wandb_run_name,
-    #            resume="must",   # <- ensures the run is resumed, not restarted
-    #            id='3fevdi8t')  # <- reuse same ID as name for explicitness
+    # wandb.init(project=wandb_project, name=wandb_run_name, config=config)
+    wandb.init(project=wandb_project,
+               name=wandb_run_name,
+               resume="must",   # <- ensures the run is resumed, not restarted
+               id='s7lmnei8')  # <- reuse same ID as name for explicitness
     wandb.config.update(config, allow_val_change=True)
 
 # training loop
