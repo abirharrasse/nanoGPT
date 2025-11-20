@@ -160,7 +160,7 @@ import functools
 
 print = functools.partial(print, flush=True)
 num_proc = 8
-tokenizer = PreTrainedTokenizerFast.from_pretrained("/home/abir19/my_non_english_tokenizer")
+tokenizer = PreTrainedTokenizerFast.from_pretrained("abir-hr196/non_english_tokenizer")
 
 TOTAL_TOKENS = 8_000_000_000
 OTHER_LANGS = ["deu_Latn", "arb_Arab", "cmn_Hani", "fra_Latn"]
