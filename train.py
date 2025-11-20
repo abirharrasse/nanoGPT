@@ -42,7 +42,7 @@ always_save_checkpoint = True # if True, always save a checkpoint after each eva
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
 wandb_log = True # disabled by default
-wandb_project = 'multilingual-gpt'
+wandb_project = 'clt-gpt'
 wandb_run_name = 'gpt2-non-english-20' # 'run' + str(time.time())
 # data
 # dataset = 'openwebtext'
