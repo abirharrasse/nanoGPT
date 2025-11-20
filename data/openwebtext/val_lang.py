@@ -112,7 +112,7 @@ print = functools.partial(print, flush=True)
 num_proc = 8
 
 print("Loading tokenizer...")
-tokenizer = PreTrainedTokenizerFast.from_pretrained("/home/abir19/my_non_english_tokenizer")
+tokenizer = PreTrainedTokenizerFast.from_pretrained("abir-hr196/non_english_tokenizer")
 print(f"Tokenizer loaded. EOS token ID: {tokenizer.eos_token_id}")
 
 TOTAL_TOKENS = 8_000_000_000
