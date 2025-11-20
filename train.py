@@ -33,7 +33,7 @@ import wandb
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
-out_dir = '/home/aharrasse/out_70'
+out_dir = '/home/abir19/out_non-english-20'
 eval_interval = 2000
 log_interval = 10
 eval_iters = 200
@@ -43,7 +43,7 @@ init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
 wandb_log = True # disabled by default
 wandb_project = 'multilingual-gpt'
-wandb_run_name = 'gpt2-multilingual-70-nano_new' # 'run' + str(time.time())
+wandb_run_name = 'gpt2-non-english-20' # 'run' + str(time.time())
 # data
 # dataset = 'openwebtext'
 gradient_accumulation_steps = 5 * 8 # used to simulate larger batch sizes
@@ -81,11 +81,11 @@ config = {k: globals()[k] for k in config_keys} # will be useful for logging
 
 # validation datasets per language
 val_langs = {
-    'arb_Arab': '/home/aharrasse/val_data_per_lang/arb_Arab_val.bin',
-    'cmn_Hani': '/home/aharrasse/val_data_per_lang/cmn_Hani_val.bin',
-    'deu_Latn': '/home/aharrasse/val_data_per_lang/deu_Latn_val.bin',
-    'eng': '/home/aharrasse/val_data_per_lang/eng_val.bin',
-    'fra_Latn': '/home/aharrasse/val_data_per_lang/fra_Latn_val.bin',
+    'arb_Arab': '/home/abir19/val_data_per_lang/arb_Arab_val.bin',
+    'cmn_Hani': '/home/abir19/val_data_per_lang/cmn_Hani_val.bin',
+    'deu_Latn': '/home/abir19/val_data_per_lang/deu_Latn_val.bin',
+    #'eng': '/home/abir19/val_data_per_lang/eng_val.bin',
+    'fra_Latn': '/home/abir19/val_data_per_lang/fra_Latn_val.bin',
 }
 
 
@@ -125,14 +125,14 @@ ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=
 
 # poor man's data loader
 # data_dir = os.path.join('data', dataset)
-data_dir = '/home/aharrasse/MultilingualGPT/data/openwebtext'
+data_dir = '/home/abir19/nanoGPT/data/openwebtext'
 def get_batch(split):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == 'train':
-        data = np.memmap(os.path.join(data_dir, 'train_700.bin'), dtype=np.uint32, mode='r')
+        data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=np.uint32, mode='r')
     else:
-        data = np.memmap(os.path.join(data_dir, 'val_700.bin'), dtype=np.uint32, mode='r')
+        data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=np.uint32, mode='r')
     ix = torch.randint(len(data) - block_size, (batch_size,))
     x = torch.stack([torch.from_numpy((data[i:i+block_size]).astype(np.int64)) for i in ix])
     y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in ix])
@@ -178,8 +178,8 @@ if init_from == 'scratch':
     print("Initializing a new model from scratch")
     # determine the vocab size we'll use for from-scratch training
     if meta_vocab_size is None:
-        print("defaulting to vocab_size of GPT-2 to 119547 (119547 rounded up for efficiency)")
-    model_args['vocab_size'] = 119547 #meta_vocab_size if meta_vocab_size is not None else 119547
+        print("defaulting to vocab_size of GPT-2 to 100000 (119547 rounded up for efficiency)")
+    model_args['vocab_size'] = 100000 #meta_vocab_size if meta_vocab_size is not None else 119547
     print(f"------------ vocab_size: {model_args['vocab_size']}")
     gptconf = GPTConfig(**model_args)
     model = GPT(gptconf)
