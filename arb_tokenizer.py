@@ -84,8 +84,8 @@ def push_to_hf(repo_id, local_path, os.getenv('HF_TOKEN')):
     print(f"Pushed successfully")
 
 if __name__ == "__main__":
-    HF_READ_TOKEN = 'os.getenv('HF_TOKEN')'
-    HF_WRITE_TOKEN = 'os.getenv('HF_TOKEN')'
+    HF_READ_TOKEN = os.getenv('HF_READ_TOKEN')
+    HF_WRITE_TOKEN = os.getenv('HF_WRITE_TOKEN')
     
     DATASET_NAME = "CausalNLP/gpt2small_full_training_data"
     TRAIN_SAMPLES = 200000

@@ -93,8 +93,8 @@ def compare_tokenizers(mono_path, dataset_name, split, num_samples, os.getenv('H
     }
 
 if __name__ == "__main__":
-    HF_READ_TOKEN = 'os.getenv('HF_TOKEN')'
-    HF_WRITE_TOKEN = 'os.getenv('HF_TOKEN')'
+token = os.getenv('HF_TOKEN')
+token_write = os.getenv('HF_WRITE_TOKEN')
     
     DATASET_NAME = "CausalNLP/gpt2small_full_training_data"
     TRAIN_SAMPLES_PER_LANG = 40000  # 40k per language = 200k total

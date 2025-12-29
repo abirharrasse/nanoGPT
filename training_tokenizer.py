@@ -68,8 +68,8 @@ def train_and_save_tokenizer(dataset_name, splits_info, text_column, vocab_size,
 
 
 if __name__ == "__main__":
-    HF_READ_TOKEN = 'os.getenv('HF_TOKEN')'
-    HF_WRITE_TOKEN = 'os.getenv('HF_TOKEN')'  
+HF_TOKEN = os.getenv('HF_TOKEN')
+HF_WRITE_TOKEN = os.getenv('HF_WRITE_TOKEN')
     
     DATASET_NAME = "CausalNLP/gpt2small_full_training_data"
     TEXT_COLUMN = "text"
