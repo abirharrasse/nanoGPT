@@ -160,7 +160,11 @@ import functools
 
 print = functools.partial(print, flush=True)
 num_proc = 8
+<<<<<<< HEAD
 tokenizer = PreTrainedTokenizerFast.from_pretrained("abir-hr196/non_english_tokenizer")
+=======
+tokenizer = PreTrainedTokenizerFast.from_pretrained("CausalNLP/gpt2-hf_multilingual-20")
+>>>>>>> 76d2d97 (new finetuning)
 
 TOTAL_TOKENS = 8_000_000_000
 OTHER_LANGS = ["deu_Latn", "arb_Arab", "cmn_Hani", "fra_Latn"]
